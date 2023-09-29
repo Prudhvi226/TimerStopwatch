@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer and Stopwatch</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #timer, #stopwatch {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        #startButton, #stopButton, #resetButton, #setTimeButton, #lapButton {
+            font-size: 1em;
+            margin: 5px;
+        }
+
+        .laps {
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+        .whole{
+            display: flex;
+            flex-direction: row;
+        }
+        .mytimer{
+            background-color: rgb(220, 245, 242);
+            margin: 20px;
+            border-radius: 20px;
+        }
+        .mystopwatch{
+            background-color: blanchedalmond;
+            margin: 20px;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Timer & Stopwatch</h1>
+    <div class="whole">
+    <div class="mytimer">
+    <div>
+        <center><h2>Timer</h2></center>
+        <label for="timeInput">Set Timer:</label>
+        <input type="number" id="timeInput" placeholder="Enter time in seconds">
+        <button id="setTimeButton">Set</button>
+    </div>
+
+    <div id="timer">0:00</div>
+    <button id="startButton">Start Timer</button>
+    <button id="stopButton">Stop Timer</button>
+    <button id="resetButton">Reset Timer</button>
+    </div>
+
+    <div class="mystopwatch">
+    <center><h2>Stopwatch</h2></center>
+    <center><div id="stopwatch">0:00</div></center>
+    <button id="startStopwatch">Start Stopwatch</button>
+    <button id="stopStopwatch">Stop Stopwatch</button>
+    <button id="resetStopwatch">Reset Stopwatch</button>
+    <button id="lapButton">Lap</button>
+    <div class="laps"></div>
+    </div>
+    </div>
+
+    <script>
+        let timerInterval;
+        let timerRunning = false;
+        let timerSeconds = 0;
+        let initialTime = 0;
+
+        let stopwatchInterval;
+        let stopwatchRunning = false;
+        let stopwatchSeconds = 0;
+
+        const timerDisplay = document.getElementById('timer');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const resetButton = document.getElementById('resetButton');
+        const setTimeButton = document.getElementById('setTimeButton');
+        const timeInput = document.getElementById('timeInput');
+
+        const stopwatchDisplay = document.getElementById('stopwatch');
+        const startStopwatchButton = document.getElementById('startStopwatch');
+        const stopStopwatchButton = document.getElementById('stopStopwatch');
+        const resetStopwatchButton = document.getElementById('resetStopwatch');
+        const lapButton = document.getElementById('lapButton');
+        const lapsContainer = document.querySelector('.laps');
+
+        setTimeButton.addEventListener('click', function () {
+            initialTime = parseInt(timeInput.value);
+            timerSeconds = initialTime;
+            timerDisplay.textContent = formatTime(timerSeconds);
+        });
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        function startTimer() {
+            if (!timerRunning && timerSeconds > 0) {
+                timerInterval = setInterval(function () {
+                    timerSeconds--;
+                    timerDisplay.textContent = formatTime(timerSeconds);
+                    if (timerSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        timerRunning = false;
+                        alert('Timer Expired!');
+                    }
+                }, 1000);
+                timerRunning = true;
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerSeconds = initialTime;
+            timerDisplay.textContent = formatTime(timerSeconds);
+        }
+
+        let lapCount = 1;
+        lapButton.addEventListener('click', function () {
+            lapsContainer.innerHTML += `<div>Lap ${lapCount}: ${formatTime(stopwatchSeconds)}</div>`;
+            lapCount++;
+        });
+
+        function startStopwatch() {
+            if (!stopwatchRunning) {
+                stopwatchInterval = setInterval(function () {
+                    stopwatchSeconds++;
+                    stopwatchDisplay.textContent = formatTime(stopwatchSeconds);
+                }, 1000);
+                stopwatchRunning = true;
+            }
+        }
+
+        function stopStopwatch() {
+            clearInterval(stopwatchInterval);
+            stopwatchRunning = false;
+        }
+
+        function resetStopwatch() {
+            clearInterval(stopwatchInterval);
+            stopwatchRunning = false;
+            stopwatchSeconds = 0;
+            stopwatchDisplay.textContent = '0:00';
+            lapCount = 1;
+            lapsContainer.innerHTML = '';
+        }
+
+        startButton.addEventListener('click', startTimer);
+        stopButton.addEventListener('click', stopTimer);
+        resetButton.addEventListener('click', resetTimer);
+
+        startStopwatchButton.addEventListener('click', startStopwatch);
+        stopStopwatchButton.addEventListener('click', stopStopwatch);
+        resetStopwatchButton.addEventListener('click', resetStopwatch);
+    </script>
+</body>
+
+</html>
